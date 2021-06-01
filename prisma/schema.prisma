@@ -10,7 +10,91 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model admins {
-  email String @id 
-  
+model users {
+  user_id    Int                 @id @default(autoincrement())
+  email         String              @unique
+  first_name    String
+  last_name     String
+  password      String
+  role          Role
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  gifs          gifs[]
+  articles      articles[]
+  comments      articles_comments[]
+  gifs_comments gifs_comments[]
+  flagged_post  flagged_post[]
+}
+
+model gifs {
+  gif_id        Int             @id @default(autoincrement())
+  gif_url       String          @unique
+  category      categories
+  worker        users         @relation(fields: [posted_by], references: [email])
+  flag          flags
+  posted_by     String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  gifs_comments gifs_comments[]
+  flagged_post  flagged_post[]
+}
+
+model articles {
+  article_id      Int                 @id @default(autoincrement())
+  article_title   String
+  article_content String
+  category        categories
+  worker          users             @relation(fields: [posted_by], references: [email])
+  flag            flags
+  posted_by       String
+  uploaded        Boolean
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  comments        articles_comments[]
+  flagged_post    flagged_post[]
+}
+
+model articles_comments {
+  comment_id      Int      @id @default(autoincrement())
+  comment_content String   @db.Text
+  worker          users  @relation(fields: [posted_by], references: [email])
+  posted_by       String
+  article         articles @relation(fields: [article_id], references: [article_id])
+  article_id      Int
+}
+
+model gifs_comments {
+  comment_id      Int     @id @default(autoincrement())
+  comment_content String  @db.Text
+  worker          users @relation(fields: [posted_by], references: [email])
+  posted_by       String
+  gif             gifs    @relation(fields: [gif_id], references: [gif_id])
+  gif_id          Int
+}
+
+enum Role {
+  admin
+  employee
+}
+
+enum categories {
+  work_related
+  tech_related
+  world_related
+}
+
+enum flags {
+  inappropriate
+  appropriate
+}
+
+model flagged_post {
+  id         Int      @id @default(autoincrement())
+  gif        gifs     @relation(fields: [gif_id], references: [gif_id])
+  gif_id     Int
+  article    articles @relation(fields: [article_id], references: [article_id])
+  article_id Int
+  worker     users  @relation(fields: [flagged_by], references: [email])
+  flagged_by String
+
 }
