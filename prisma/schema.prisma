@@ -19,6 +19,8 @@ model users {
   role          Role
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt
+  resetPasswordToken String? @unique
+  resetPasswordExpirationDate String? 
   gifs          gifs[]
   articles      articles[]
   comments      articles_comments[]
@@ -28,7 +30,7 @@ model users {
 
 model gifs {
   gif_id        Int             @id @default(autoincrement())
-  gif_url       String          @unique
+  gif_file_path       String          @unique
   category      categories
   worker        users         @relation(fields: [posted_by], references: [email])
   flag          flags
@@ -42,7 +44,7 @@ model gifs {
 model articles {
   article_id      Int                 @id @default(autoincrement())
   article_title   String
-  article_content String
+  article_content String @db.LongText
   category        categories
   worker          users             @relation(fields: [posted_by], references: [email])
   flag            flags

@@ -1,7 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const joi = require('joi');
-// const jwt = require('jsonwebtoken');
+const jwt = require('../utils/jwt');
 const bcrypt = require('bcrypt');
 
 
@@ -74,7 +74,7 @@ const adminCreateUser = async (req, res) => {
         });
 
         // jwt
-        const jsonwebtoken = createToken(user.email);
+        const jsonwebtoken = jwt.create(user.email);
 
         return res.status(200).json({
           status: '200',
